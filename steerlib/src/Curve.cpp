@@ -57,7 +57,7 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 	// Robustness: make sure there is at least two control point: start and end points
 
 	// Move on the curve from t=0 to t=finalPoint, using window as step size, and linearly interpolate the curve points
-	
+
 	return;
 #endif
 }
@@ -89,7 +89,7 @@ void Curve::sortControlPoints()
 	} while (swapped);
 #ifdef DEBUG
 	printf("Sorted Control Points: \n");
-	for (int i = 1; i < len; i++)
+	for (int i = 0; i < len; i++)
 	{
 		//printf("%f %f %f\n", controlPoints[i].position.x, controlPoints[i].position.y, controlPoints[i].position.z);
 		printf("\t%f\n", controlPoints[i].time);
@@ -133,7 +133,7 @@ bool Curve::calculatePoint(Point& outputPoint, float time)
 bool Curve::checkRobust()
 {
 	if(controlPoints.size() < 2)
-		return false;	
+		return false;
 
 	return true;
 }
@@ -162,11 +162,12 @@ bool Curve::findTimeInterval(unsigned int& nextPoint, float time)
 		{
 			nextPoint = i;
 #ifdef DEBUG
-			printf("Current time: %f.\nChosen point index: %d, time: %f.\nPossible choices: \n", time, nextPoint, controlPoints[nextPoint].time);
-			for (int i = 0; i < len; i++)
+			printf("Current time: %f.\nChosen point index: %d, time: %f.\n", time, nextPoint, controlPoints[nextPoint].time);
+/*			for (int i = 0; i < len; i++)
 			{
 				printf("\t%f\n", controlPoints[i].time);
 			}
+*/
 #endif
 			return true;
 		}
@@ -181,20 +182,31 @@ Point Curve::useHermiteCurve(const unsigned int nextPoint, const float time)
 	Point newPosition;
 	float normalTime, intervalTime;
 
-	//================DELETE THIS PART AND THEN START CODING===================
-	static bool flag = false;
-	if (!flag)
-	{
-		std::cerr << "ERROR>>>>Member function useHermiteCurve is not implemented!" << std::endl;
-		flag = true;
-	}
-	//=========================================================================
-
-
 	// Calculate time interval, and normal time required for later curve calculations
+	intervalTime = controlPoints[nextPoint].time - controlPoints[nextPoint - 1].time;
+	/*
+	 * normalTime is the actual time normalized to be between 0 and 1, 0 being the time of the last control
+	 * point and 1 being the time of the next control point
+	*/
+	normalTime = (time - controlPoints[nextPoint - 1].time) / (intervalTime);
+#ifdef DEBUG
+	printf("Normal time: %f.\n", normalTime);
+#endif
+	if (normalTime < 0 || normalTime > 1)
+		return newPosition;
 
+	Point p0 = controlPoints[nextPoint - 1].position;
+	Point p1 = controlPoints[nextPoint].position;
+	Vector t0 = controlPoints[nextPoint - 1].tangent * intervalTime;
+	Vector t1 = controlPoints[nextPoint].tangent * intervalTime;
 	// Calculate position at t = time on Hermite curve
+	/* based on the formula in the lecture slides (curves pg 64)... */
+	newPosition = (2*pow(normalTime, 3) - 3*pow(normalTime, 2) + 1)*p0 + (pow(normalTime, 3) - 2*pow(normalTime, 2) + normalTime)*t0 + (-2*pow(normalTime, 3) + 3*pow(normalTime, 2))*p1 + (pow(normalTime, 3) - pow(normalTime, 2))*t1;
 
+#ifdef DEBUG
+	printf("Moving toward control point %f %f %f.\n", controlPoints[nextPoint].position.x, controlPoints[nextPoint].position.y, controlPoints[nextPoint].position.z);
+	printf("New position %f %f %f on curve.\n", newPosition.x, newPosition.y, newPosition.z);
+#endif
 	// Return result
 	return newPosition;
 }
