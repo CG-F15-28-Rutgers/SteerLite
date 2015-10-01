@@ -65,14 +65,39 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 // Sort controlPoints vector in ascending order: min-first
 void Curve::sortControlPoints()
 {
-	//================DELETE THIS PART AND THEN START CODING===================
-	static bool flag = false;
-	if (!flag)
+	/* done by ahh42 : ahh42.scarletmail.rutgers.edu */
+
+	/* simple bubblesort control points */
+	/* TODO: optimize? */
+	int len = controlPoints.size();
+	bool swapped = false;
+	if(len < 2)
 	{
-		std::cerr << "ERROR>>>>Member function sortControlPoints is not implemented!" << std::endl;
-		flag = true;
+		return;
 	}
-	//=========================================================================
+	do
+	{
+		swapped = false;
+		for (int i = 1; i < len; i++)
+		{
+			if (controlPoints[i].time < controlPoints[i - 1].time)
+			{
+				CurvePoint temp = controlPoints[i];
+				controlPoints[i] = controlPoints[i - 1];
+				controlPoints[i - 1] = temp;
+				swapped = true;
+			}
+		}
+	} while (swapped);
+#ifdef DEBUG
+	printf("Sorted Control Points: \n");
+	for (int i = 1; i < len; i++)
+	{
+		//printf("%f %f %f\n", controlPoints[i].position.x, controlPoints[i].position.y, controlPoints[i].position.z);
+		printf("%f\n", controlPoints[i].time);
+	}
+	printf("\n");
+#endif
 
 	return;
 }
