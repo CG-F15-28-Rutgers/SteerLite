@@ -65,10 +65,8 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 // Sort controlPoints vector in ascending order: min-first
 void Curve::sortControlPoints()
 {
-	/* done by ahh42 : ahh42.scarletmail.rutgers.edu */
-
 	/* simple bubblesort control points */
-	/* TODO: optimize? */
+	/* TODO(ahh42): optimize? */
 	int len = controlPoints.size();
 	bool swapped = false;
 	if(len < 2)
@@ -134,15 +132,8 @@ bool Curve::calculatePoint(Point& outputPoint, float time)
 // Check Roboustness
 bool Curve::checkRobust()
 {
-	//================DELETE THIS PART AND THEN START CODING===================
-	static bool flag = false;
-	if (!flag)
-	{
-		std::cerr << "ERROR>>>>Member function checkRobust is not implemented!" << std::endl;
-		flag = true;
-	}
-	//=========================================================================
-
+	if(controlPoints.size() < 2)
+		return false;	
 
 	return true;
 }
