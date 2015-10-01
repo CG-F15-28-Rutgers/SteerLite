@@ -92,7 +92,7 @@ void Curve::sortControlPoints()
 	for (int i = 1; i < len; i++)
 	{
 		//printf("%f %f %f\n", controlPoints[i].position.x, controlPoints[i].position.y, controlPoints[i].position.z);
-		printf("%f\n", controlPoints[i].time);
+		printf("\t%f\n", controlPoints[i].time);
 	}
 	printf("\n");
 #endif
@@ -141,17 +141,38 @@ bool Curve::checkRobust()
 // Find the current time interval (i.e. index of the next control point to follow according to current time)
 bool Curve::findTimeInterval(unsigned int& nextPoint, float time)
 {
-	//================DELETE THIS PART AND THEN START CODING===================
-	static bool flag = false;
-	if (!flag)
+	int len = controlPoints.size();
+	if (time < 0.0f)
+		return false;
+	if(len < 1)
+		return false;
+	if(time < controlPoints[0].time)
 	{
-		std::cerr << "ERROR>>>>Member function findTimeInterval is not implemented!" << std::endl;
-		flag = true;
+		nextPoint = 0;
+		return true;
 	}
-	//=========================================================================
 
+	/* if the time is at or past the last control point return false */
+	if (time >= controlPoints[len-1].time)
+		return false;
 
-	return true;
+	for (int i = 1; i < len; i++)
+	{
+		if (time < controlPoints[i].time && time >= controlPoints[i-1].time)
+		{
+			nextPoint = i;
+#ifdef DEBUG
+			printf("Current time: %f.\nChosen point index: %d, time: %f.\nPossible choices: \n", time, nextPoint, controlPoints[nextPoint].time);
+			for (int i = 0; i < len; i++)
+			{
+				printf("\t%f\n", controlPoints[i].time);
+			}
+#endif
+			return true;
+		}
+	}
+
+	return false;
 }
 
 // Implement Hermite curve
@@ -196,7 +217,7 @@ Point Curve::useCatmullCurve(const unsigned int nextPoint, const float time)
 	// Calculate time interval, and normal time required for later curve calculations
 
 	// Calculate position at t = time on Catmull-Rom curve
-	
+
 	// Return result
 	return newPosition;
 }
