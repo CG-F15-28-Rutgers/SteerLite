@@ -45,18 +45,31 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 {
 #ifdef ENABLE_GUI
 
-	//================DELETE THIS PART AND THEN START CODING===================
-	static bool flag = false;
-	if (!flag)
-	{
-		std::cerr << "ERROR>>>>Member function drawCurve is not implemented!" << std::endl;
-		flag = true;
-	}
-	//=========================================================================
 
 	// Robustness: make sure there is at least two control point: start and end points
+	checkRobust();
 
 	// Move on the curve from t=0 to t=finalPoint, using window as step size, and linearly interpolate the curve points
+	float time = 0.0f + window;
+	Point lastDrawPoint = controlPoints[0].position;
+	while (time <= controlPoints[controlPoints.size()-1].time)
+	{
+		Point newDrawPoint;
+		unsigned int nextPoint; 
+		findTimeInterval(nextPoint, time);
+		if (type == hermiteCurve)
+		{
+			newDrawPoint = useHermiteCurve(nextPoint, time);
+		}
+		else if (type == catmullCurve)
+		{
+			newDrawPoint = useCatmullCurve(nextPoint, time);
+		}
+		DrawLib::drawLine(lastDrawPoint, newDrawPoint, curveColor, curveThickness);
+		time += window;
+		printf("time %f\n", time);
+		lastDrawPoint = newDrawPoint;
+	}
 
 	return;
 #endif
