@@ -67,7 +67,7 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 		}
 		DrawLib::drawLine(lastDrawPoint, newDrawPoint, curveColor, curveThickness);
 		time += window;
-		printf("time %f\n", time);
+		//printf("time %f\n", time);
 		lastDrawPoint = newDrawPoint;
 	}
 
